@@ -1,29 +1,27 @@
-# sleepoutside
+# BYU-Pathway Worldwide Online
+## WDD 330 - Web Frontend Development II
 
-## Description
+### ⛺ SleepOutside Starter Code
 
-Use this as a starting point to complete the WDD 330 team activity: the SleepOutside web application. It scaffolds out a simple web app with Vite support to bundle up our assets.
+ - This repository is the start of the SleepOutside web application project for WDD 330. The repository contains branches which are checkpoints for the team and individual assignments throughout the course.
 
-## Prerequisites
+ - https://byui-cse.github.io/wdd330-ww-course/week01/team.html
 
-- You must have Node installed. visit https://byui-cit.github.io/advcss/lesson01/l01-software.html and skip to the Node section for instructions
+### Prerequisites
 
-## Setup
+- You must have Node installed to run the following commands.
+[WDD 330 Setup Environment](https://byui-cse.github.io/wdd330-ww-course/intro/) 
 
-- `npm install`
-- `npm run start` starts up a local server and updates on any JS or CSS/SCSS changes.
+### Common Workflow Commands
 
-## Other commands
-
-- `npm run build` to build final files when you are ready to turn in.
 - `npm run lint` to run ESLint against your code to find errors.
 - `npm run format` to run Prettier to automatically format your code.
+- `npm run start` starts up a local server and updates on any JS or CSS/SCSS 
+- `npm run build` to build final files when you are ready to turn in.
 
-Trello 
-https://trello.com/invite/b/u9wxGVgR/ATTI1dc5145386d49b1e8ddc90bf2bd0bb1685633880/wdd-web-frontend-group-14
 
-Github Repository 
-https://github.com/Blueclaus13/sleepOutside
+---
+_BYU-Pathway Worldwide improves lives through access to spiritually based, online affordable higher education. Its mission is to develop disciples of Jesus Christ who are leaders in their homes, the Church, and their communities._
 
-Netlify 
-https://idyllic-duckanoo-e367bd.netlify.app
+
+

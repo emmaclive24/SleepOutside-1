@@ -1,69 +1,47 @@
-import { setLocalStorage, renderTemplate, cartCount } from "./utils.mjs";
-
-function productDetailsTemplate(product) {
-
-  let listPrice = parseFloat(product.ListPrice).toFixed(2);
-  let finalPrice = parseFloat(product.FinalPrice).toFixed(2);
-  let suggestedRetailPrice = parseInt(product.SuggestedRetailPrice);
-  let priceAfterDescount = parseInt(finalPrice - (suggestedRetailPrice - finalPrice)).toFixed(2);
-  const saleHTML = finalPrice < suggestedRetailPrice ? `<p class="on-sale">ON SALE</p>
-    <p class="tag">Save -$${((product.SuggestedRetailPrice.toFixed(2) - product.FinalPrice).toFixed(2))}</p>
-    <p class="product-card_price"><s>$${product.ListPrice}</s></p>` : "";
-  const newProduct = `<section class="product-detail"> <h3>${product.Brand.Name}</h3>
-        <h2 class="divider">${product.NameWithoutBrand}</h2>
-        <img
-          src="${product.Images.PrimaryLarge}"
-          alt="${product.NameWithoutBrand}"
-        />
-        ${saleHTML}
-        <p class="product-card__price">$${priceAfterDescount}</p>
-        <p class="product__color">${product.Colors[0].ColorName}</p>
-        <p class="product__description">
-        ${product.DescriptionHtmlSimple}
-        </p>
-      <div class="product-detail__add">
-        <div id="notification" class="notification">Item added to cart!</div>
-        <button id="addToCart" data-id="${product.Id}">Add to Cart</button>
-      </div></section>`;
-  return newProduct;
-}
+import { getLocalStorage, setLocalStorage } from "./utils.mjs";
 
 export default class ProductDetails {
-  constructor(productId, dataSource, localStore) {
+
+  constructor(productId, dataSource) {
     this.productId = productId;
     this.product = {};
     this.dataSource = dataSource;
-    this.localStore = localStore ?? [];
   }
+
   async init() {
-    this.product = await this.dataSource.findProductById(this.productId)
-    this.renderProductDetails("main");
+    // use the datasource to get the details for the current product. findProductById will return a promise! use await or .then() to process it
+    this.product = await this.dataSource.findProductById(this.productId);
+    // the product details are needed before rendering the HTML
+    this.renderProductDetails();
+    // once the HTML is rendered, add a listener to the Add to Cart button
+    // Notice the .bind(this). This callback will not work if the bind(this) is missing. Review the readings from this week on "this" to understand why.
     document
-      .getElementById('addToCart')
-      .addEventListener('click', this.addToCart.bind(this));
+      .getElementById("addToCart")
+      .addEventListener("click", this.addProductToCart.bind(this));
   }
-  addToCart() {
-    this.localStore.push(this.product)
-    setLocalStorage("so-cart", this.localStore);
 
-    cartCount();
-    this.cartNotification();
+  addProductToCart() {
+    const cartItems = getLocalStorage("so-cart") || [];
+    cartItems.push(this.product);
+    setLocalStorage("so-cart", cartItems);
   }
-  renderProductDetails(selector) {
-    renderTemplate(productDetailsTemplate, selector, this.product);
-  }
-  cartNotification() {
-    var notification = document.getElementById('notification');
-    notification.classList.remove('appear');
 
-    setTimeout(function () {
-      notification.classList.remove('disappear');
-      notification.classList.add('appear');
-    }, 1);
-
-    setTimeout(function () {
-      notification.classList.remove('appear');
-      notification.classList.add('disappear');
-    }, 3000);
+  renderProductDetails() {
+    productDetailsTemplate(this.product);
   }
+}
+
+function productDetailsTemplate(product) {
+  document.querySelector("h2").textContent = product.Brand.Name;
+  document.querySelector("h3").textContent = product.NameWithoutBrand;
+
+  const productImage = document.getElementById("productImage");
+  productImage.src = product.Image;
+  productImage.alt = product.NameWithoutBrand;
+
+  document.getElementById("productPrice").textContent = product.FinalPrice;
+  document.getElementById("productColor").textContent = product.Colors[0].ColorName;
+  document.getElementById("productDesc").innerHTML = product.DescriptionHtmlSimple;
+
+  document.getElementById("addToCart").dataset.id = product.Id;
 }

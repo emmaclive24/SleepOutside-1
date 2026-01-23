@@ -1,39 +1,42 @@
 import { renderListWithTemplate } from "./utils.mjs";
 
+// Template function for product cards
 function productCardTemplate(product) {
-    let listPrice = parseFloat(product.ListPrice).toFixed(2);
-    let finalPrice = parseFloat(product.FinalPrice).toFixed(2);
-    let suggestedRetailPrice = parseInt(product.SuggestedRetailPrice);
-    let priceAfterDescount = parseInt(finalPrice -(suggestedRetailPrice - finalPrice)).toFixed(2);
-    const saleHTML = finalPrice < suggestedRetailPrice ? `<p class="on-sale">ON SALE</p>
-    <p class="tag">Save -$${((product.SuggestedRetailPrice.toFixed(2) - product.FinalPrice).toFixed(2))}</p>
-    <p class="product-card_price"><s>$${product.ListPrice}</s></p>` : "";
-    const newProduct = `<li class="product-card">
-            <a href="../product_pages/index.html?product=${product.Id}">
-                <img src="${product.Images.PrimaryMedium}" alt="Image of ${product.Name}">
-                <h3 class="card_brand">${product.Brand.Name}</h3>
-                <h2 class="card_name">${product.Name}</h2>
-                ${saleHTML}
-                <p class="product-card_price">$${priceAfterDescount}</p>
-            </a>
-        </li>`;
-    return newProduct;
+  return `<li class="product-card">
+    <a href="product_pages/?product=${product.Id}">
+      <img src="${product.Image}" alt="Image of ${product.Name}">
+      <h2 class="card__brand">${product.Brand.Name}</h2>
+      <h3 class="card__name">${product.NameWithoutBrand}</h3>
+      <p class="product-card__price">$${product.FinalPrice}</p>
+    </a>
+  </li>`;
 }
 
 export default class ProductList {
-    constructor(category, dataSource, listElement){
-        this.category = category;
-        this.dataSource = dataSource;
-        this.listElement = listElement;
-    }
+  constructor(category, dataSource, listElement) {
+    // You passed in this information to make the class as reusable as possible.
+    // Being able to define these things when you use the class will make it very flexible
+    this.category = category;
+    this.dataSource = dataSource;
+    this.listElement = listElement;
+  }
 
-    async init() {
-        const list = await this.dataSource.getData(this.category);
-        this.renderList(list);
-        document.querySelector(".title").innerHTML = this.category;
-    }
+  async init() {
+    // the dataSource will return a Promise...so you can use await to resolve it.
+    const list = await this.dataSource.getData();
+    // Filter to only show products we have detail pages for
+    const filteredList = this.filterProducts(list);
+    // render the list
+    this.renderList(filteredList);
+  }
 
-    renderList(list) {
-        renderListWithTemplate(productCardTemplate, this.listElement, list);
-    }
+  filterProducts(list) {
+    // Only show products we have detail pages for
+    const validProductIds = ["880RR", "985RF", "985PR", "344YJ"];
+    return list.filter((product) => validProductIds.includes(product.Id));
+  }
+
+  renderList(list) {
+    renderListWithTemplate(productCardTemplate, this.listElement, list);
+  }
 }
